@@ -34,8 +34,21 @@
                           <Component id="browserButton" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="dirDisplay" min="-2" pref="397" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="536" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="arg0TextField" min="-2" pref="76" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="arg1TextField" min="-2" pref="76" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="arg2TextField" min="-2" pref="76" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="arg3TextField" min="-2" pref="76" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="arg4TextField" min="-2" pref="76" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="dirDisplay" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="541" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -51,7 +64,14 @@
                   <Component id="dirDisplay" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="runButton" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="runButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="arg0TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="arg1TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="arg2TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="arg3TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="arg4TextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
               <Component id="jScrollPane2" pref="561" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -105,6 +125,16 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="arg0TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="arg1TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="arg2TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="arg3TextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="arg4TextField">
     </Component>
   </SubComponents>
 </Form>
