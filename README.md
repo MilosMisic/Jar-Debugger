@@ -1,2 +1,2 @@
 Simple JAR runner I made for debugging at work.
-![alt tag](https://postimg.org/image/3usq856pp/)
+![alt tag](https://s14.postimg.org/mzvzhwldt/jar_debug.png)
