@@ -2,6 +2,7 @@ package jardebugger.window;
 
 import java.io.*;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 
 public class MainWindow extends javax.swing.JFrame {
 
@@ -18,6 +19,11 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         redirectConsoleTo(console);
+
+        try {
+            console.getDocument().remove(0, console.getDocument().getLength());
+        } catch (BadLocationException ex) {
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -133,26 +139,6 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_runButtonActionPerformed
 
     public static void main(String args[]) {
-        if (args.length > 0) {
-            arg1 = args[0];
-        }
-
-        if (args.length > 1) {
-            arg2 = args[1];
-        }
-
-        if (args.length > 2) {
-            arg3 = args[2];
-        }
-
-        if (args.length > 3) {
-            arg4 = args[3];
-        }
-
-        if (args.length > 4) {
-            arg5 = args[4];
-        }
-
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Windows".equals(info.getName())) {
@@ -168,33 +154,28 @@ public class MainWindow extends javax.swing.JFrame {
         });
     }
 
-    public void exec(JTextArea ConsolePane) {
-        new Thread(() -> {
+    public void exec(JTextArea area) {
 
-            String endCommand = " && java -jar " + fileName;
-            try {
+        String endCommand = " && java -jar " + fileName;
+        try {
+            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + directory + endCommand);
+            builder.redirectErrorStream(true);
+            Process p = builder.start();
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            String text = "";
 
-                ConsolePane.setText("");
-                ProcessBuilder builder = new ProcessBuilder(
-                        "cmd.exe", "/c", "cd " + directory + endCommand);
-
-                builder.redirectErrorStream(true);
-                Process p = builder.start();
-                BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line;
-                String text = "";
-
-                while (true) {
-                    line = r.readLine();
-                    if (line == null) {
-                        break;
-                    }
-                    text = text + line + "\n";
+            while (true) {
+                line = r.readLine();
+                if (line == null) {
+                    break;
                 }
-                ConsolePane.append(text);
-            } catch (Exception e) {
+                text = text + line + "\n";
+                console.setText(text);
+                console.update(console.getGraphics());
             }
-        }).start();
+        } catch (Exception e) {
+        }
     }
 
     public static void redirectConsoleTo(final JTextArea textarea) {
@@ -206,15 +187,6 @@ public class MainWindow extends javax.swing.JFrame {
         }, true);
         System.setErr(out);
         System.setOut(out);
-    }
-
-    private void printLog(String content) {
-        new Thread(() -> {
-            while (true) {
-                console.append(content);
-//                    System.out.println("Time now is " + (new Date()));
-            }
-        }).start();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
