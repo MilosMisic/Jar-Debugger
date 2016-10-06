@@ -60,6 +60,7 @@ public final class MainWindow extends javax.swing.JFrame {
         oldDirDisplay = new javax.swing.JTextField();
         libsCheckBox = new javax.swing.JCheckBox();
         switchButton = new javax.swing.JButton();
+        clearButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jar Debugger ");
@@ -128,6 +129,13 @@ public final class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        clearButton.setText("Clear");
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -135,7 +143,6 @@ public final class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(runButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -163,11 +170,19 @@ public final class MainWindow extends javax.swing.JFrame {
                             .addComponent(selectOldButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(libsCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(libsCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(0, 0, 0))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(switchButton)
-                                .addGap(0, 9, Short.MAX_VALUE)))))
-                .addContainerGap())
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 1017, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -179,7 +194,7 @@ public final class MainWindow extends javax.swing.JFrame {
                     .addComponent(selectNewButton)
                     .addComponent(newDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(switchButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(libsCheckBox)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -191,9 +206,11 @@ public final class MainWindow extends javax.swing.JFrame {
                         .addComponent(arg4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(selectOldButton)
                         .addComponent(oldDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(31, 31, 31)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 561, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(clearButton)
+                .addGap(4, 4, 4))
         );
 
         pack();
@@ -211,11 +228,15 @@ public final class MainWindow extends javax.swing.JFrame {
 				dirDisplay.setText(file.getPath());
 				runJarDirectory = file.getParent();
 				runFileName = file.getName();
+				break;
 		}
     }//GEN-LAST:event_browserButtonActionPerformed
 
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
+//		new Thread(() -> {
 		exec(console);
+//		}).start();
+
     }//GEN-LAST:event_runButtonActionPerformed
 
     private void selectNewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectNewButtonActionPerformed
@@ -230,6 +251,7 @@ public final class MainWindow extends javax.swing.JFrame {
 				newDirDisplay.setText(file.getPath());
 				newFileDirectory = file.getParent();
 				newFileName = file.getName();
+				break;
 		}
     }//GEN-LAST:event_selectNewButtonActionPerformed
 
@@ -241,6 +263,7 @@ public final class MainWindow extends javax.swing.JFrame {
 			case JFileChooser.APPROVE_OPTION:
 				oldDirDisplay.setText(fileChooser.getSelectedFile().getPath());
 				oldFileDirectory = fileChooser.getSelectedFile().getPath();
+				break;
 
 		}
     }//GEN-LAST:event_selectOldButtonActionPerformed
@@ -248,6 +271,10 @@ public final class MainWindow extends javax.swing.JFrame {
     private void switchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchButtonActionPerformed
 		switchFiles();
     }//GEN-LAST:event_switchButtonActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+		console.setText("");
+    }//GEN-LAST:event_clearButtonActionPerformed
 
 	public static void main(String args[]) {
 		try {
@@ -301,12 +328,16 @@ public final class MainWindow extends javax.swing.JFrame {
 	}
 
 	public void switchFiles() {
-
+		System.out.println("old dir " + oldFileDirectory);
+		if (oldFileDirectory.startsWith("\"") && oldFileDirectory.endsWith("\"")) {
+			oldFileDirectory = oldFileDirectory.substring(1, oldFileDirectory.length() - 1);
+		}
 		File[] oldFolder = new File(oldFileDirectory).listFiles();
 		for (File f : oldFolder) {
 			if (f.getName().equalsIgnoreCase(newFileName)) {
 				f.delete();
 				System.out.println("Deleted: " + f.getName());
+
 			}
 		}
 		if (newFileName.contains(" ")) {
@@ -314,6 +345,10 @@ public final class MainWindow extends javax.swing.JFrame {
 		}
 		if (oldFileDirectory.contains(" ")) {
 			oldFileDirectory = '"' + oldFileDirectory + '"';
+		}
+
+		if (libsCheckBox.isSelected()) {
+			System.out.println("Moving libs too");
 		}
 		String command = "& copy " + newFileName + " " + oldFileDirectory;
 		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + command);
@@ -349,6 +384,7 @@ public final class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField arg3TextField;
     private javax.swing.JTextField arg4TextField;
     private javax.swing.JButton browserButton;
+    private javax.swing.JButton clearButton;
     private javax.swing.JTextArea console;
     private javax.swing.JTextField dirDisplay;
     private javax.swing.JScrollPane jScrollPane2;
