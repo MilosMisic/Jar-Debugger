@@ -1,12 +1,9 @@
 package jardebugger.window;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.*;
 
 public final class MainWindow extends javax.swing.JFrame {
 
@@ -33,11 +30,15 @@ public final class MainWindow extends javax.swing.JFrame {
 			console.getDocument().remove(0, console.getDocument().getLength());
 		} catch (BadLocationException ex) {
 		}
+
 		addingFocus(arg0TextField, "Args 1");
 		addingFocus(arg1TextField, "Args 2");
 		addingFocus(arg2TextField, "Args 3");
 		addingFocus(arg3TextField, "Cmd 1");
 		addingFocus(arg4TextField, "Cmd 2");
+
+		DefaultCaret caret = (DefaultCaret) console.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -78,6 +79,11 @@ public final class MainWindow extends javax.swing.JFrame {
         browserButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browserButtonActionPerformed(evt);
+            }
+        });
+        browserButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                browserButtonKeyPressed(evt);
             }
         });
 
@@ -121,7 +127,7 @@ public final class MainWindow extends javax.swing.JFrame {
         oldDirDisplay.setEditable(false);
         oldDirDisplay.setText("Old JAR Location");
 
-        libsCheckBox.setText("  libs");
+        libsCheckBox.setText("  lib");
 
         switchButton.setText("Switch");
         switchButton.addActionListener(new java.awt.event.ActionListener() {
@@ -178,16 +184,18 @@ public final class MainWindow extends javax.swing.JFrame {
                             .addComponent(selectOldButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(switchButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(libsCheckBox)
-                                .addGap(73, 73, 73)
-                                .addComponent(killJVM))
-                            .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(130, 130, 130)
+                                .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(libsCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(killJVM)))
                         .addGap(28, 28, 28))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1301, Short.MAX_VALUE)
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -248,7 +256,6 @@ public final class MainWindow extends javax.swing.JFrame {
 		new Thread(() -> {
 			exec(console);
 		}).start();
-
     }//GEN-LAST:event_runButtonActionPerformed
 
     private void selectNewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectNewButtonActionPerformed
@@ -292,6 +299,12 @@ public final class MainWindow extends javax.swing.JFrame {
 		System.exit(0);
     }//GEN-LAST:event_killJVMActionPerformed
 
+    private void browserButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_browserButtonKeyPressed
+		if (evt.getKeyCode() == KeyEvent.VK_E) {
+			runButtonActionPerformed(null);
+		}
+    }//GEN-LAST:event_browserButtonKeyPressed
+
 	public static void main(String args[]) {
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -310,7 +323,7 @@ public final class MainWindow extends javax.swing.JFrame {
 
 	public void exec(JTextArea area) {
 
-		String endCommand = " && java -jar " + runFileName;
+		String endCommand = " & java -jar " + runFileName;
 		try {
 			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + runJarDirectory + endCommand);
 			builder.redirectErrorStream(true);
@@ -330,6 +343,7 @@ public final class MainWindow extends javax.swing.JFrame {
 			}
 		} catch (Exception e) {
 		}
+
 	}
 
 	public static void redirectConsoleTo(final JTextArea textarea) {
@@ -356,6 +370,27 @@ public final class MainWindow extends javax.swing.JFrame {
 
 				}
 			}
+			if (libsCheckBox.isSelected()) {
+				File lib = new File(oldFileDirectory + "\\lib");
+
+				if (!lib.exists()) {
+					lib.mkdir();
+					if (lib.exists())
+						System.out.println("Created lib folder.");
+				} else {
+					String deleteCommand = " & rmdir /s /q lib";
+					ProcessBuilder deleteLibs = new ProcessBuilder("cmd.exe", "/c", "cd " + oldFileDirectory + deleteCommand);
+					deleteLibs.redirectErrorStream(true);
+					try {
+						deleteLibs.start();
+						System.out.println("Deleted lib folder.");
+					} catch (IOException ex) {
+						System.out.println("Process failed.");
+					}
+					lib.mkdir();
+				}
+			}
+
 			if (newFileName.contains(" ")) {
 				newFileName = '"' + newFileName + '"';
 			}
@@ -363,19 +398,34 @@ public final class MainWindow extends javax.swing.JFrame {
 				oldFileDirectory = '"' + oldFileDirectory + '"';
 			}
 
-			if (libsCheckBox.isSelected()) {
-				System.out.println("Moving libs too");
-			}
-
-			String command = "& copy " + newFileName + " " + oldFileDirectory;
+			String command = " & copy " + newFileName + " " + oldFileDirectory;
 			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + command);
 			builder.redirectErrorStream(true);
 			try {
-				Process p = builder.start();
+				builder.start();
 			} catch (IOException ex) {
 				System.out.println("Process failed.");
 			}
+
+			if (libsCheckBox.isSelected()) {
+				if (oldFileDirectory.endsWith("\"")) {
+					oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 1) + "\\lib\"";
+				}
+				String libCommand = " & copy " + newFileDirectory + "\\lib" + " " + oldFileDirectory;
+				ProcessBuilder libProcBuider = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + libCommand);
+				libProcBuider.redirectErrorStream(true);
+				try {
+					libProcBuider.start();
+				} catch (IOException ex) {
+					System.out.println("Process failed.");
+				}
+				oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 5) + "\"";
+				System.out.println(oldFileDirectory + " SDJSKSJD");
+				System.out.println("Moving lib too");
+			}
+
 			System.out.println("Switching completed.");
+
 		} else {
 			System.out.println("Select directories first!");
 		}
