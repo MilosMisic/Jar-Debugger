@@ -358,6 +358,7 @@ public final class MainWindow extends javax.swing.JFrame {
 	}
 
 	public void switchFiles() {
+
 		if (!oldFileDirectory.equals("") && !newFileDirectory.equals("")) {
 			if (oldFileDirectory.startsWith("\"") && oldFileDirectory.endsWith("\"")) {
 				oldFileDirectory = oldFileDirectory.substring(1, oldFileDirectory.length() - 1);
@@ -387,45 +388,44 @@ public final class MainWindow extends javax.swing.JFrame {
 					} catch (IOException ex) {
 						System.out.println("Process failed.");
 					}
-					lib.mkdir();
+					if (!lib.exists()) {
+						lib.mkdir();
+					}
 				}
-			}
 
-			if (newFileName.contains(" ")) {
-				newFileName = '"' + newFileName + '"';
-			}
-			if (oldFileDirectory.contains(" ")) {
-				oldFileDirectory = '"' + oldFileDirectory + '"';
-			}
-
-			String command = " & copy " + newFileName + " " + oldFileDirectory;
-			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + command);
-			builder.redirectErrorStream(true);
-			try {
-				builder.start();
-			} catch (IOException ex) {
-				System.out.println("Process failed.");
-			}
-
-			if (libsCheckBox.isSelected()) {
-				if (oldFileDirectory.endsWith("\"")) {
-					oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 1) + "\\lib\"";
+				if (newFileName.contains(" ")) {
+					newFileName = '"' + newFileName + '"';
 				}
-				String libCommand = " & copy " + newFileDirectory + "\\lib" + " " + oldFileDirectory;
-				ProcessBuilder libProcBuider = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + libCommand);
-				libProcBuider.redirectErrorStream(true);
+				if (oldFileDirectory.contains(" ")) {
+					oldFileDirectory = '"' + oldFileDirectory + '"';
+				}
+
+				String command = " & copy " + newFileName + " " + oldFileDirectory;
+				ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + command);
+				builder.redirectErrorStream(true);
 				try {
-					libProcBuider.start();
+					builder.start();
 				} catch (IOException ex) {
 					System.out.println("Process failed.");
 				}
-				oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 5) + "\"";
-				System.out.println(oldFileDirectory + " SDJSKSJD");
-				System.out.println("Moving lib too");
+
+				if (libsCheckBox.isSelected()) {
+					if (oldFileDirectory.endsWith("\"")) {
+						oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 1) + "\\lib\"";
+					}
+					String libCommand = " & copy " + newFileDirectory + "\\lib" + " " + oldFileDirectory;
+					ProcessBuilder libProcBuider = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + libCommand);
+					libProcBuider.redirectErrorStream(true);
+					try {
+						libProcBuider.start();
+					} catch (IOException ex) {
+						System.out.println("Process failed.");
+					}
+					oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 5) + "\"";
+					System.out.println("Moving lib folder.");
+				}
+				System.out.println("Switching completed.");
 			}
-
-			System.out.println("Switching completed.");
-
 		} else {
 			System.out.println("Select directories first!");
 		}
