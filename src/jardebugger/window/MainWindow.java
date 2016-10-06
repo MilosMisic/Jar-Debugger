@@ -3,42 +3,44 @@ package jardebugger.window;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 
 public final class MainWindow extends javax.swing.JFrame {
 
-    String runJarDirectory = "";
-    String newFileDirectory = "";
-    String oldFileDirectory = "";
+	String runJarDirectory = "";
+	String newFileDirectory = "";
+	String oldFileDirectory = "";
 
-    String runFileName = "";
-    String newFileName = "";
-    String oldFileName = "";
+	String runFileName = "";
+	String newFileName = "";
+	String oldFileName = "";
 
-    static String arg1;
-    static String arg2;
-    static String arg3;
-    static String arg4;
-    static String arg5;
+	static String arg1;
+	static String arg2;
+	static String arg3;
+	static String arg4;
+	static String arg5;
 
-    public MainWindow() {
-        initComponents();
-        setLocationRelativeTo(null);
-        redirectConsoleTo(console);
+	public MainWindow() {
+		initComponents();
+		setLocationRelativeTo(null);
+		redirectConsoleTo(console);
 
-        try {
-            console.getDocument().remove(0, console.getDocument().getLength());
-        } catch (BadLocationException ex) {
-        }
-        addingFocus(arg0TextField, "Args 1");
-        addingFocus(arg1TextField, "Args 2");
-        addingFocus(arg2TextField, "Args 3");
-        addingFocus(arg3TextField, "Cmd 1");
-        addingFocus(arg4TextField, "Cmd 2");
-    }
+		try {
+			console.getDocument().remove(0, console.getDocument().getLength());
+		} catch (BadLocationException ex) {
+		}
+		addingFocus(arg0TextField, "Args 1");
+		addingFocus(arg1TextField, "Args 2");
+		addingFocus(arg2TextField, "Args 3");
+		addingFocus(arg3TextField, "Cmd 1");
+		addingFocus(arg4TextField, "Cmd 2");
+	}
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -66,6 +68,7 @@ public final class MainWindow extends javax.swing.JFrame {
         console.setColumns(20);
         console.setFont(new java.awt.Font("Consolas", 1, 16)); // NOI18N
         console.setForeground(new java.awt.Color(0, 255, 0));
+        console.setLineWrap(true);
         console.setRows(5);
         jScrollPane2.setViewportView(console);
 
@@ -96,14 +99,14 @@ public final class MainWindow extends javax.swing.JFrame {
 
         arg4TextField.setText("Cmd 2");
 
-        selectNewButton.setText("New ");
+        selectNewButton.setText("From");
         selectNewButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectNewButtonActionPerformed(evt);
             }
         });
 
-        selectOldButton.setText("Old");
+        selectOldButton.setText("To");
         selectOldButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectOldButtonActionPerformed(evt);
@@ -155,15 +158,15 @@ public final class MainWindow extends javax.swing.JFrame {
                             .addComponent(newDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(oldDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(selectNewButton)
-                            .addComponent(selectOldButton, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(selectNewButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(selectOldButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(libsCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(switchButton)
-                                .addGap(0, 11, Short.MAX_VALUE)))))
+                                .addGap(0, 9, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -198,126 +201,146 @@ public final class MainWindow extends javax.swing.JFrame {
 
     private void browserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browserButtonActionPerformed
 
-        JFileChooser fileChooser = new JFileChooser();
+		JFileChooser fileChooser = new JFileChooser();
 
-        fileChooser.setMultiSelectionEnabled(false);
-        switch (fileChooser.showOpenDialog(this)) {
+		fileChooser.setMultiSelectionEnabled(false);
+		switch (fileChooser.showOpenDialog(this)) {
 
-            case JFileChooser.APPROVE_OPTION:
-                File file = fileChooser.getSelectedFile();
-                dirDisplay.setText(file.getPath());
-                runJarDirectory = file.getParent();
-                runFileName = file.getName();
-        }
+			case JFileChooser.APPROVE_OPTION:
+				File file = fileChooser.getSelectedFile();
+				dirDisplay.setText(file.getPath());
+				runJarDirectory = file.getParent();
+				runFileName = file.getName();
+		}
     }//GEN-LAST:event_browserButtonActionPerformed
 
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
-        exec(console);
+		exec(console);
     }//GEN-LAST:event_runButtonActionPerformed
 
     private void selectNewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectNewButtonActionPerformed
 
-        JFileChooser fileChooser = new JFileChooser();
+		JFileChooser fileChooser = new JFileChooser();
 
-        fileChooser.setMultiSelectionEnabled(false);
-        switch (fileChooser.showOpenDialog(this)) {
+		fileChooser.setMultiSelectionEnabled(false);
+		switch (fileChooser.showOpenDialog(this)) {
 
-            case JFileChooser.APPROVE_OPTION:
-                File file = fileChooser.getSelectedFile();
-                newDirDisplay.setText(file.getPath());
-                newFileDirectory = file.getParent();
-                newFileName = file.getName();
-        }
+			case JFileChooser.APPROVE_OPTION:
+				File file = fileChooser.getSelectedFile();
+				newDirDisplay.setText(file.getPath());
+				newFileDirectory = file.getParent();
+				newFileName = file.getName();
+		}
     }//GEN-LAST:event_selectNewButtonActionPerformed
 
     private void selectOldButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectOldButtonActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fileChooser.setMultiSelectionEnabled(false);
+		switch (fileChooser.showOpenDialog(this)) {
+			case JFileChooser.APPROVE_OPTION:
+				oldDirDisplay.setText(fileChooser.getSelectedFile().getPath());
+				oldFileDirectory = fileChooser.getSelectedFile().getPath();
 
-        fileChooser.setMultiSelectionEnabled(false);
-        switch (fileChooser.showOpenDialog(this)) {
-
-            case JFileChooser.APPROVE_OPTION:
-                File file = fileChooser.getSelectedFile();
-                oldDirDisplay.setText(file.getPath());
-                oldFileDirectory = file.getParent();
-                oldFileName = file.getName();
-        }
+		}
     }//GEN-LAST:event_selectOldButtonActionPerformed
 
     private void switchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchButtonActionPerformed
-        switchFiles();
+		switchFiles();
     }//GEN-LAST:event_switchButtonActionPerformed
 
-    public static void main(String args[]) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-        }
+	public static void main(String args[]) {
+		try {
+			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+				if ("Windows".equals(info.getName())) {
+					javax.swing.UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+		}
 
-        java.awt.EventQueue.invokeLater(() -> {
-            new MainWindow().setVisible(true);
-        });
-    }
+		java.awt.EventQueue.invokeLater(() -> {
+			new MainWindow().setVisible(true);
+		});
+	}
 
-    public void exec(JTextArea area) {
+	public void exec(JTextArea area) {
 
-        String endCommand = " && java -jar " + runFileName;
-        try {
-            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + runJarDirectory + endCommand);
-            builder.redirectErrorStream(true);
-            Process p = builder.start();
-            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            String text = "";
+		String endCommand = " && java -jar " + runFileName;
+		try {
+			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + runJarDirectory + endCommand);
+			builder.redirectErrorStream(true);
+			Process p = builder.start();
+			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line;
+			String text = "";
 
-            while (true) {
-                line = r.readLine();
-                if (line == null) {
-                    break;
-                }
-                text = text + line + "\n";
-                console.setText(text);
-                console.update(console.getGraphics());
-            }
-        } catch (Exception e) {
-        }
-    }
+			while (true) {
+				line = r.readLine();
+				if (line == null) {
+					break;
+				}
+				text = text + line + "\n";
+				console.setText(text);
+				console.update(console.getGraphics());
+			}
+		} catch (Exception e) {
+		}
+	}
 
-    public static void redirectConsoleTo(final JTextArea textarea) {
-        PrintStream out = new PrintStream(new ByteArrayOutputStream() {
-            @Override
-            public synchronized void flush() throws IOException {
-                textarea.setText(toString());
-            }
-        }, true);
-        System.setErr(out);
-        System.setOut(out);
-    }
+	public static void redirectConsoleTo(final JTextArea textarea) {
+		PrintStream out = new PrintStream(new ByteArrayOutputStream() {
+			@Override
+			public synchronized void flush() throws IOException {
+				textarea.setText(toString());
+			}
+		}, true);
+		System.setErr(out);
+		System.setOut(out);
+	}
 
-    public void switchFiles() {
+	public void switchFiles() {
 
-    }
+		File[] oldFolder = new File(oldFileDirectory).listFiles();
+		for (File f : oldFolder) {
+			if (f.getName().equalsIgnoreCase(newFileName)) {
+				f.delete();
+				System.out.println("Deleted: " + f.getName());
+			}
+		}
+		if (newFileName.contains(" ")) {
+			newFileName = '"' + newFileName + '"';
+		}
+		if (oldFileDirectory.contains(" ")) {
+			oldFileDirectory = '"' + oldFileDirectory + '"';
+		}
+		String command = "& copy " + newFileName + " " + oldFileDirectory;
+		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + command);
+		builder.redirectErrorStream(true);
+		try {
+			Process p = builder.start();
+		} catch (IOException ex) {
+			System.out.println("Process failed.");
+		}
+		System.out.println("Switching completed.");
+	}
 
-    public void addingFocus(JTextField field, String name) {
-        field.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                field.setText("");
-            }
+	public void addingFocus(JTextField field, String name) {
+		field.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				field.setText("");
+			}
 
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (field.getText().equals("")) {
-                    field.setText(name);
-                }
-            }
-        });
-    }
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (field.getText().equals("")) {
+					field.setText(name);
+				}
+			}
+		});
+	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField arg0TextField;
