@@ -1,13 +1,20 @@
 package jardebugger.window;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 
-public class MainWindow extends javax.swing.JFrame {
+public final class MainWindow extends javax.swing.JFrame {
 
-    String directory = "";
-    String fileName = "";
+    String runJarDirectory = "";
+    String newFileDirectory = "";
+    String oldFileDirectory = "";
+
+    String runFileName = "";
+    String newFileName = "";
+    String oldFileName = "";
 
     static String arg1;
     static String arg2;
@@ -24,6 +31,11 @@ public class MainWindow extends javax.swing.JFrame {
             console.getDocument().remove(0, console.getDocument().getLength());
         } catch (BadLocationException ex) {
         }
+        addingFocus(arg0TextField, "Args 1");
+        addingFocus(arg1TextField, "Args 2");
+        addingFocus(arg2TextField, "Args 3");
+        addingFocus(arg3TextField, "Cmd 1");
+        addingFocus(arg4TextField, "Cmd 2");
     }
 
     @SuppressWarnings("unchecked")
@@ -40,6 +52,12 @@ public class MainWindow extends javax.swing.JFrame {
         arg2TextField = new javax.swing.JTextField();
         arg3TextField = new javax.swing.JTextField();
         arg4TextField = new javax.swing.JTextField();
+        selectNewButton = new javax.swing.JButton();
+        selectOldButton = new javax.swing.JButton();
+        newDirDisplay = new javax.swing.JTextField();
+        oldDirDisplay = new javax.swing.JTextField();
+        libsCheckBox = new javax.swing.JCheckBox();
+        switchButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jar Debugger ");
@@ -59,12 +77,51 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         dirDisplay.setEditable(false);
-        dirDisplay.setText("Select JAR Directory");
+        dirDisplay.setText("Running JAR Directory");
 
         runButton.setText("Run");
         runButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runButtonActionPerformed(evt);
+            }
+        });
+
+        arg0TextField.setText("Args 1");
+
+        arg1TextField.setText("Args 2");
+
+        arg2TextField.setText("Args 3");
+
+        arg3TextField.setText("Cmd 1");
+
+        arg4TextField.setText("Cmd 2");
+
+        selectNewButton.setText("New ");
+        selectNewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectNewButtonActionPerformed(evt);
+            }
+        });
+
+        selectOldButton.setText("Old");
+        selectOldButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectOldButtonActionPerformed(evt);
+            }
+        });
+
+        newDirDisplay.setEditable(false);
+        newDirDisplay.setText("New JAR Location");
+
+        oldDirDisplay.setEditable(false);
+        oldDirDisplay.setText("Old JAR Location");
+
+        libsCheckBox.setText("  libs");
+
+        switchButton.setText("Switch");
+        switchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                switchButtonActionPerformed(evt);
             }
         });
 
@@ -82,6 +139,7 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(browserButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(dirDisplay)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(arg0TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -91,9 +149,21 @@ public class MainWindow extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(arg3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(arg4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(dirDisplay))
-                        .addGap(0, 541, Short.MAX_VALUE)))
+                                .addComponent(arg4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(47, 47, 47)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(newDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(oldDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(selectNewButton)
+                            .addComponent(selectOldButton, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(libsCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(switchButton)
+                                .addGap(0, 11, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -102,15 +172,22 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(browserButton)
-                    .addComponent(dirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(selectNewButton)
+                    .addComponent(newDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(switchButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(runButton)
-                    .addComponent(arg0TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(arg1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(arg2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(arg3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(arg4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(libsCheckBox)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(runButton)
+                        .addComponent(arg0TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(arg1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(arg2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(arg3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(arg4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(selectOldButton)
+                        .addComponent(oldDirDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(31, 31, 31)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 561, Short.MAX_VALUE)
                 .addContainerGap())
@@ -129,14 +206,47 @@ public class MainWindow extends javax.swing.JFrame {
             case JFileChooser.APPROVE_OPTION:
                 File file = fileChooser.getSelectedFile();
                 dirDisplay.setText(file.getPath());
-                directory = file.getParent();
-                fileName = file.getName();
+                runJarDirectory = file.getParent();
+                runFileName = file.getName();
         }
     }//GEN-LAST:event_browserButtonActionPerformed
 
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
         exec(console);
     }//GEN-LAST:event_runButtonActionPerformed
+
+    private void selectNewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectNewButtonActionPerformed
+
+        JFileChooser fileChooser = new JFileChooser();
+
+        fileChooser.setMultiSelectionEnabled(false);
+        switch (fileChooser.showOpenDialog(this)) {
+
+            case JFileChooser.APPROVE_OPTION:
+                File file = fileChooser.getSelectedFile();
+                newDirDisplay.setText(file.getPath());
+                newFileDirectory = file.getParent();
+                newFileName = file.getName();
+        }
+    }//GEN-LAST:event_selectNewButtonActionPerformed
+
+    private void selectOldButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectOldButtonActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+
+        fileChooser.setMultiSelectionEnabled(false);
+        switch (fileChooser.showOpenDialog(this)) {
+
+            case JFileChooser.APPROVE_OPTION:
+                File file = fileChooser.getSelectedFile();
+                oldDirDisplay.setText(file.getPath());
+                oldFileDirectory = file.getParent();
+                oldFileName = file.getName();
+        }
+    }//GEN-LAST:event_selectOldButtonActionPerformed
+
+    private void switchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchButtonActionPerformed
+        switchFiles();
+    }//GEN-LAST:event_switchButtonActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -156,9 +266,9 @@ public class MainWindow extends javax.swing.JFrame {
 
     public void exec(JTextArea area) {
 
-        String endCommand = " && java -jar " + fileName;
+        String endCommand = " && java -jar " + runFileName;
         try {
-            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + directory + endCommand);
+            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + runJarDirectory + endCommand);
             builder.redirectErrorStream(true);
             Process p = builder.start();
             BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -189,6 +299,26 @@ public class MainWindow extends javax.swing.JFrame {
         System.setOut(out);
     }
 
+    public void switchFiles() {
+
+    }
+
+    public void addingFocus(JTextField field, String name) {
+        field.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                field.setText("");
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (field.getText().equals("")) {
+                    field.setText(name);
+                }
+            }
+        });
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField arg0TextField;
     private javax.swing.JTextField arg1TextField;
@@ -199,6 +329,12 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextArea console;
     private javax.swing.JTextField dirDisplay;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JCheckBox libsCheckBox;
+    private javax.swing.JTextField newDirDisplay;
+    private javax.swing.JTextField oldDirDisplay;
     private javax.swing.JButton runButton;
+    private javax.swing.JButton selectNewButton;
+    private javax.swing.JButton selectOldButton;
+    private javax.swing.JButton switchButton;
     // End of variables declaration//GEN-END:variables
 }
