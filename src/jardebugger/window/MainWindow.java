@@ -2,6 +2,11 @@ package jardebugger.window;
 
 import java.awt.event.*;
 import java.io.*;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.text.*;
 
@@ -343,7 +348,6 @@ public final class MainWindow extends javax.swing.JFrame {
 			}
 		} catch (Exception e) {
 		}
-
 	}
 
 	public static void redirectConsoleTo(final JTextArea textarea) {
@@ -358,77 +362,56 @@ public final class MainWindow extends javax.swing.JFrame {
 	}
 
 	public void switchFiles() {
-
 		if (!oldFileDirectory.equals("") && !newFileDirectory.equals("")) {
-			if (oldFileDirectory.startsWith("\"") && oldFileDirectory.endsWith("\"")) {
-				oldFileDirectory = oldFileDirectory.substring(1, oldFileDirectory.length() - 1);
-			}
-			File[] oldFolder = new File(oldFileDirectory).listFiles();
-			for (File f : oldFolder) {
-				if (f.getName().equalsIgnoreCase(newFileName)) {
-					f.delete();
-					System.out.println("Deleted: " + f.getName());
-
-				}
-			}
-			if (libsCheckBox.isSelected()) {
-				File lib = new File(oldFileDirectory + "\\lib");
-
-				if (!lib.exists()) {
-					lib.mkdir();
-					if (lib.exists())
-						System.out.println("Created lib folder.");
-				} else {
-					String deleteCommand = " & rmdir /s /q lib";
-					ProcessBuilder deleteLibs = new ProcessBuilder("cmd.exe", "/c", "cd " + oldFileDirectory + deleteCommand);
-					deleteLibs.redirectErrorStream(true);
-					try {
-						deleteLibs.start();
-						System.out.println("Deleted lib folder.");
-					} catch (IOException ex) {
-						System.out.println("Process failed.");
-					}
-					if (!lib.exists()) {
-						lib.mkdir();
-					}
-				}
-
-				if (newFileName.contains(" ")) {
-					newFileName = '"' + newFileName + '"';
-				}
-				if (oldFileDirectory.contains(" ")) {
-					oldFileDirectory = '"' + oldFileDirectory + '"';
-				}
-
-				String command = " & copy " + newFileName + " " + oldFileDirectory;
-				ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + command);
-				builder.redirectErrorStream(true);
-				try {
-					builder.start();
-				} catch (IOException ex) {
-					System.out.println("Process failed.");
-				}
-
-				if (libsCheckBox.isSelected()) {
-					if (oldFileDirectory.endsWith("\"")) {
-						oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 1) + "\\lib\"";
-					}
-					String libCommand = " & copy " + newFileDirectory + "\\lib" + " " + oldFileDirectory;
-					ProcessBuilder libProcBuider = new ProcessBuilder("cmd.exe", "/c", "cd " + newFileDirectory + libCommand);
-					libProcBuider.redirectErrorStream(true);
-					try {
-						libProcBuider.start();
-					} catch (IOException ex) {
-						System.out.println("Process failed.");
-					}
-					oldFileDirectory = oldFileDirectory.substring(0, oldFileDirectory.length() - 5) + "\"";
-					System.out.println("Moving lib folder.");
-				}
-				System.out.println("Switching completed.");
-			}
+			deleteExistingFiles();
+			copyJar();
+			copyLib();
 		} else {
 			System.out.println("Select directories first!");
 		}
+	}
+
+	private void copyJar() {
+		if (newFileName.contains(" ")) {
+			newFileName = '"' + newFileName + '"';
+		}
+		if (oldFileDirectory.contains(" ")) {
+			oldFileDirectory = '"' + oldFileDirectory + '"';
+		}
+		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c",
+													"cd " + newFileDirectory + " & copy " + newFileName + " " + oldFileDirectory);
+		builder.redirectErrorStream(true);
+		try {
+			builder.start();
+		} catch (IOException ex) {
+
+		}
+	}
+
+	private void copyLib() {
+
+	}
+
+	private void deleteExistingFiles() {
+		File[] oldFiles = {new File(oldFileDirectory + "\\" + newFileName), new File(oldFileDirectory + "\\lib")};
+		if (oldFiles[0].exists()) {
+			oldFiles[0].delete();
+		}
+		if (libsCheckBox.isSelected() && oldFiles[1].exists()) {
+			deleteDirectory(oldFiles[1]);
+		}
+	}
+
+	static public boolean deleteDirectory(File path) {
+		File[] files = path.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].isDirectory()) {
+				deleteDirectory(files[i]);
+			} else {
+				files[i].delete();
+			}
+		}
+		return (path.delete());
 	}
 
 	public void addingFocus(JTextField field, String name) {
