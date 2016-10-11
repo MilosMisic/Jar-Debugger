@@ -23,8 +23,8 @@ public final class MainWindow extends javax.swing.JFrame {
 	static String arg5;
 
 	//TO DO
-	// Implement args and commands
-	// Implement syntax highlithing for errors and exceptions
+	// Implement args and commands.
+	// Implement syntax highligthing for errors and exceptions.
 	public MainWindow() {
 		initComponents();
 		setLocationRelativeTo(null);
@@ -391,8 +391,9 @@ public final class MainWindow extends javax.swing.JFrame {
 			input.close();
 			output.close();
 		} catch (FileNotFoundException ex) {
-			System.out.println("f nt fnd");
+			System.out.println("File not found copyFile()");
 		} catch (IOException e) {
+			System.out.println("Input - output problem in copyFile()");
 		}
 
 	}
