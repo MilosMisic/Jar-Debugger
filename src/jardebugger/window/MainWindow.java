@@ -22,6 +22,9 @@ public final class MainWindow extends javax.swing.JFrame {
 	static String arg4;
 	static String arg5;
 
+	//TO DO
+	// Implement args and commands
+	// Implement syntax highlithing for errors and exceptions
 	public MainWindow() {
 		initComponents();
 		setLocationRelativeTo(null);
