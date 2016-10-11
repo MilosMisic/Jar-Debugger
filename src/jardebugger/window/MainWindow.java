@@ -264,7 +264,6 @@ public final class MainWindow extends javax.swing.JFrame {
 
 		fileChooser.setMultiSelectionEnabled(false);
 		switch (fileChooser.showOpenDialog(this)) {
-
 			case JFileChooser.APPROVE_OPTION:
 				File file = fileChooser.getSelectedFile();
 				newDirDisplay.setText(file.getPath());
@@ -283,7 +282,6 @@ public final class MainWindow extends javax.swing.JFrame {
 				oldDirDisplay.setText(fileChooser.getSelectedFile().getPath());
 				oldFileDirectory = fileChooser.getSelectedFile().getPath();
 				break;
-
 		}
     }//GEN-LAST:event_selectOldButtonActionPerformed
 
@@ -360,7 +358,8 @@ public final class MainWindow extends javax.swing.JFrame {
 		if (!oldFileDirectory.equals("") && !newFileDirectory.equals("")) {
 			deleteExistingFiles();
 			copyFile(new File(newFileDirectory + "\\" + newFileName), new File(oldFileDirectory + "\\" + newFileName));
-			copyFolder(new File(newFileDirectory + "\\lib"), new File(oldFileDirectory + "\\lib"));
+			if (libsCheckBox.isSelected())
+				copyFolder(new File(newFileDirectory + "\\lib"), new File(oldFileDirectory + "\\lib"));
 		} else {
 			System.out.println("Select directories first!");
 		}
@@ -384,7 +383,6 @@ public final class MainWindow extends javax.swing.JFrame {
 			byte[] buf = new byte[1024];
 			int bytesRead;
 			while ((bytesRead = input.read(buf)) > 0) {
-
 				output.write(buf, 0, bytesRead);
 			}
 			input.close();
@@ -406,7 +404,7 @@ public final class MainWindow extends javax.swing.JFrame {
 		if (libsCheckBox.isSelected() && oldFiles[1].exists()) {
 			deleteDirectory(oldFiles[1]);
 			oldFiles[1].mkdir();
-		} else
+		} else if (libsCheckBox.isSelected())
 			oldFiles[1].mkdir();
 	}
 
