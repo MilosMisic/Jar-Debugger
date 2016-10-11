@@ -398,9 +398,8 @@ public final class MainWindow extends javax.swing.JFrame {
 
 		File[] oldFiles = {new File(oldFileDirectory + "\\" + newFileName), new File(oldFileDirectory + "\\lib")};
 
-		if (oldFiles[0].exists()) {
+		if (oldFiles[0].exists())
 			oldFiles[0].delete();
-		}
 		if (libsCheckBox.isSelected() && oldFiles[1].exists()) {
 			deleteDirectory(oldFiles[1]);
 			oldFiles[1].mkdir();
