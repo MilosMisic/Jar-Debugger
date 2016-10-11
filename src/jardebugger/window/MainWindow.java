@@ -3,10 +3,6 @@ package jardebugger.window;
 import java.awt.event.*;
 import java.io.*;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.text.*;
 
@@ -72,10 +68,11 @@ public final class MainWindow extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jar Debugger ");
 
+        console.setEditable(false);
         console.setBackground(new java.awt.Color(51, 51, 51));
         console.setColumns(20);
         console.setFont(new java.awt.Font("Consolas", 1, 16)); // NOI18N
-        console.setForeground(new java.awt.Color(0, 255, 0));
+        console.setForeground(new java.awt.Color(102, 255, 102));
         console.setLineWrap(true);
         console.setRows(5);
         jScrollPane2.setViewportView(console);
@@ -242,9 +239,7 @@ public final class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void browserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browserButtonActionPerformed
-
 		JFileChooser fileChooser = new JFileChooser();
-
 		fileChooser.setMultiSelectionEnabled(false);
 		switch (fileChooser.showOpenDialog(this)) {
 
@@ -327,8 +322,8 @@ public final class MainWindow extends javax.swing.JFrame {
 	}
 
 	public void exec(JTextArea area) {
-
 		String endCommand = " & java -jar " + runFileName;
+
 		try {
 			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd " + runJarDirectory + endCommand);
 			builder.redirectErrorStream(true);
@@ -364,52 +359,64 @@ public final class MainWindow extends javax.swing.JFrame {
 	public void switchFiles() {
 		if (!oldFileDirectory.equals("") && !newFileDirectory.equals("")) {
 			deleteExistingFiles();
-			copyJar();
-			copyLib();
+			copyFile(new File(newFileDirectory + "\\" + newFileName), new File(oldFileDirectory + "\\" + newFileName));
+			copyFolder(new File(newFileDirectory + "\\lib"), new File(oldFileDirectory + "\\lib"));
 		} else {
 			System.out.println("Select directories first!");
 		}
 	}
 
-	private void copyJar() {
-		if (newFileName.contains(" ")) {
-			newFileName = '"' + newFileName + '"';
-		}
-		if (oldFileDirectory.contains(" ")) {
-			oldFileDirectory = '"' + oldFileDirectory + '"';
-		}
-		ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c",
-													"cd " + newFileDirectory + " & copy " + newFileName + " " + oldFileDirectory);
-		builder.redirectErrorStream(true);
-		try {
-			builder.start();
-		} catch (IOException ex) {
-
+	private void copyFolder(File path, File dest) {
+		File[] files = path.listFiles();
+		for (File file : files) {
+			if (!file.isDirectory()) {
+				copyFile(file, new File(dest.getParent() + "\\lib\\" + file.getName()));
+			}
 		}
 	}
 
-	private void copyLib() {
+	private void copyFile(File source, File dest) {
+		InputStream input = null;
+		OutputStream output = null;
+		try {
+			input = new FileInputStream(source);
+			output = new FileOutputStream(dest);
+			byte[] buf = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = input.read(buf)) > 0) {
+				output.write(buf, 0, bytesRead);
+			}
+			input.close();
+			output.close();
+		} catch (FileNotFoundException ex) {
+			System.out.println("f nt fnd");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
 	private void deleteExistingFiles() {
+
 		File[] oldFiles = {new File(oldFileDirectory + "\\" + newFileName), new File(oldFileDirectory + "\\lib")};
+
 		if (oldFiles[0].exists()) {
 			oldFiles[0].delete();
 		}
 		if (libsCheckBox.isSelected() && oldFiles[1].exists()) {
 			deleteDirectory(oldFiles[1]);
-		}
+			oldFiles[1].mkdir();
+		} else
+			oldFiles[1].mkdir();
 	}
 
 	static public boolean deleteDirectory(File path) {
 		File[] files = path.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory()) {
-				deleteDirectory(files[i]);
-			} else {
-				files[i].delete();
-			}
+		for (File file : files) {
+			if (file.isDirectory())
+				deleteDirectory(file);
+			else
+				file.delete();
 		}
 		return (path.delete());
 	}
