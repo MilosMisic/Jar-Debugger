@@ -384,6 +384,7 @@ public final class MainWindow extends javax.swing.JFrame {
 			byte[] buf = new byte[1024];
 			int bytesRead;
 			while ((bytesRead = input.read(buf)) > 0) {
+
 				output.write(buf, 0, bytesRead);
 			}
 			input.close();
