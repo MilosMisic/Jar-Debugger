@@ -391,7 +391,6 @@ public final class MainWindow extends javax.swing.JFrame {
 		} catch (FileNotFoundException ex) {
 			System.out.println("f nt fnd");
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 	}
