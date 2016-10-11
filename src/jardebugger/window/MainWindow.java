@@ -360,9 +360,9 @@ public final class MainWindow extends javax.swing.JFrame {
 			copyFile(new File(newFileDirectory + "\\" + newFileName), new File(oldFileDirectory + "\\" + newFileName));
 			if (libsCheckBox.isSelected())
 				copyFolder(new File(newFileDirectory + "\\lib"), new File(oldFileDirectory + "\\lib"));
-		} else {
+		} else
 			System.out.println("Select directories first!");
-		}
+
 	}
 
 	private void copyFolder(File path, File dest) {
