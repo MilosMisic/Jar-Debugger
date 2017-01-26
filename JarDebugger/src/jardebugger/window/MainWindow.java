@@ -16,6 +16,8 @@ public final class MainWindow extends javax.swing.JFrame {
 	String newFileName = "";
 	String oldFileName = "";
 
+	String text = "";
+
 	static String arg1;
 	static String arg2;
 	static String arg3;
@@ -27,7 +29,6 @@ public final class MainWindow extends javax.swing.JFrame {
 	// Implement syntax highligthing for errors and exceptions.
 	public MainWindow() {
 		initComponents();
-		setLocationRelativeTo(null);
 		redirectConsoleTo(console);
 
 		try {
@@ -293,7 +294,9 @@ public final class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_switchButtonActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+
 		console.setText("");
+		text = "";
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void killJVMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_killJVMActionPerformed
@@ -331,7 +334,6 @@ public final class MainWindow extends javax.swing.JFrame {
 			Process p = builder.start();
 			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
-			String text = "";
 
 			while (true) {
 				line = r.readLine();
